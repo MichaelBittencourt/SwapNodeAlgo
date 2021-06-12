@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <map>
 //#define DEBUG
 
 using namespace std;
@@ -6,6 +7,8 @@ using namespace std;
 string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
+int amountOflevels = 0;
+map<int, list<int>> levelList;
 
 /*
  * Complete the 'swapNodes' function below.
@@ -41,13 +44,7 @@ void printQueries(vector<int> queries) {
 void inOrderAcess(vector<vector<int>> indexes, vector<int> & ret, int & retPosition, int index) {
     if (index >= 0) {
         inOrderAcess(indexes, ret, retPosition, indexes[index][0] - 1);
-#ifdef DEBUG
-        cout << "retPosition = " << retPosition << endl;
-#endif
         ret[retPosition++] = (index+1);
-#ifdef DEBUG
-        cout << "node = " << index+1 << endl;
-#endif       
         inOrderAcess(indexes, ret, retPosition, indexes[index][1] - 1);
     }
 }
@@ -57,46 +54,71 @@ void inOrderAcess(vector<vector<int>> indexes, vector<int> & ret) {
     inOrderAcess(indexes, ret, initialPosition, 0);
 }
 
+void addLevelOnTree(vector<vector<int>> & indexes, int index, int level) {
+    if (index >= 0) {
+        if (level > amountOflevels) {
+            amountOflevels = level;
+        }
+        addLevelOnTree(indexes, indexes[index][0] - 1, level + 1);
+        indexes[index].push_back(level);
+        levelList[level].push_back(index);
+        addLevelOnTree(indexes, indexes[index][1] - 1, level + 1);
+    }
+}
+
+void addLevelOnTree(vector<vector<int>> & indexes) {
+    addLevelOnTree(indexes, 0, 1);
+    //printIndexes(indexes);
+}
+
 void swapInLevel(vector<vector<int>> & indexes, int node, int level, int querie) {
     if (node >= 0) {
         if (level % querie == 0) {
             int temp = indexes[node][0];
             indexes[node][0] = indexes[node][1];
             indexes[node][1] = temp;
-#ifdef DEBUG
-            cout << "############# after swap ##############" << endl;
-            cout << "node = " << node << endl;
-            printIndexes(indexes);
-#endif
-        }
+        } 
         swapInLevel(indexes, indexes[node][0] - 1, level+1, querie);
         swapInLevel(indexes, indexes[node][1] - 1, level+1, querie);
     }
 }
 
+void swapInLevel(vector<vector<int>> & indexes, int querie) {
+    for(int i = 0; i < indexes.size(); i++) {
+        if (indexes[i][2] % querie == 0) {
+            int temp = indexes[i][0];
+            indexes[i][0] = indexes[i][1];
+            indexes[i][1] = temp;           
+        }
+    }
+}
+
+void forInLevel(vector<vector<int>> & indexes, int querie) {
+    for(int i = querie; querie * i <= amountOflevels; i=2*i) {
+        cout << "querie = " << querie << endl;
+        for(list<int>::iterator it = levelList[i].begin(); it != levelList[i].end(); it++) {
+            
+            cout << "it = " << (*it) << endl;
+            int temp = indexes[(*it)][0];
+            indexes[(*it)][0] = indexes[(*it)][1];
+            indexes[(*it)][1] = temp;
+        }
+    }
+}
+
 void singleSwap(vector<vector<int>> & indexes, int querie) {
-    swapInLevel(indexes, 0, 1, querie);
+    //swapInLevel(indexes, 0, 1, querie);
+    //swapInLevel(indexes, querie);
+    forInLevel(indexes, querie);
+    printIndexes(indexes);
 }
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
-#ifdef DEBUG
-    cout << "############# Start program ##############" << endl;
-    printIndexes(indexes);
-    printQueries(queries);
-#endif
+    addLevelOnTree(indexes);
     vector<vector<int>> ret(queries.size());
     for(int i = 0; i < ret.size(); i++) {
         ret[i].resize(indexes.size());
-#ifdef DEBUG
-        cout << "queries[" << i << "] = " << queries[i] << endl;
-#endif
-        //for(int j = 1; queries[i]*j < indexes.size(); j++) {
         singleSwap(indexes, queries[i]);
-        //}
-#ifdef DEBUG
-        cout << "############# Swap finish ##############" << endl;
-        printIndexes(indexes);
-#endif
         inOrderAcess(indexes, ret[i]);
     }
     return ret;
