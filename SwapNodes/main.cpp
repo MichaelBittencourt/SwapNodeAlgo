@@ -97,13 +97,8 @@ void swapInLevel(vector<vector<int>> & indexes, int querie) {
 }
 
 void forInLevel(vector<vector<int>> & indexes, int querie) {
-    //cout << "############### For in Level ######################" << endl;
     for(int i = querie; i <= amountOflevels; i+=querie) {
-        //cout << "amountOfLevels = " << amountOflevels << endl;
-        //cout << "querie = " << querie << endl;
-        //cout << "i = " << i << endl;
         for(list<int>::iterator it = levelList[i-1].begin(); it != levelList[i-1].end(); it++) {
-            //cout << "it = " << (*it) << endl;
             int temp = indexes[(*it)][0];
             indexes[(*it)][0] = indexes[(*it)][1];
             indexes[(*it)][1] = temp;
@@ -129,6 +124,16 @@ void singleSwap(vector<vector<int>> & indexes, int querie) {
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
     addLevelOnTree(indexes);
+#ifdef STRATEGY_1
+    cout << "############### Strategy 1 #################" << endl;
+#else
+#ifdef STRATEGY_2
+    cout << "############### Strategy 2 #################" << endl;
+#else
+    cout << "############### Strategy 3 #################" << endl; 
+#endif
+#endif
+
     vector<vector<int>> ret(queries.size());
     for(int i = 0; i < ret.size(); i++) {
         ret[i].resize(indexes.size());

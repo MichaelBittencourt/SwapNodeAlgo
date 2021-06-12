@@ -5,7 +5,7 @@ a.out: main.cpp
 .PHONY: run clean test strategy1 strategy2 strategy3 strategy1_setup
 
 run: a.out
-	time ./run.sh
+	./run.sh
 
 clean:
 	rm -f a.out
@@ -22,8 +22,8 @@ strategy2_setup: clean
 strategy3_setup: clean
 	$(eval DEFINES=-DSTRATEGY_3)
 
-strategy1: strategy1_setup run
+strategy1: strategy1_setup a.out
 
-strategy2: strategy2_setup run
+strategy2: strategy2_setup a.out
 
-strategy3: strategy3_setup run
+strategy3: strategy3_setup a.out
