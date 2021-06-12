@@ -57,9 +57,9 @@ void inOrderAcess(vector<vector<int>> indexes, vector<int> & ret) {
     inOrderAcess(indexes, ret, initialPosition, 0);
 }
 
-void swapInLevel(vector<vector<int>> & indexes, int node, int level) {
+void swapInLevel(vector<vector<int>> & indexes, int node, int level, int querie) {
     if (node >= 0) {
-        if (level == 1) {
+        if (level % querie == 0) {
             int temp = indexes[node][0];
             indexes[node][0] = indexes[node][1];
             indexes[node][1] = temp;
@@ -68,15 +68,14 @@ void swapInLevel(vector<vector<int>> & indexes, int node, int level) {
             cout << "node = " << node << endl;
             printIndexes(indexes);
 #endif
-        } else {
-            swapInLevel(indexes, indexes[node][0] - 1, level-1);
-            swapInLevel(indexes, indexes[node][1] - 1, level-1);
         }
+        swapInLevel(indexes, indexes[node][0] - 1, level+1, querie);
+        swapInLevel(indexes, indexes[node][1] - 1, level+1, querie);
     }
 }
 
 void singleSwap(vector<vector<int>> & indexes, int querie) {
-    swapInLevel(indexes, 0, querie);
+    swapInLevel(indexes, 0, 1, querie);
 }
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
@@ -91,9 +90,9 @@ vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) 
 #ifdef DEBUG
         cout << "queries[" << i << "] = " << queries[i] << endl;
 #endif
-        for(int j = 1; queries[i]*j < indexes.size(); j++) {
-            singleSwap(indexes, queries[i]*j);
-        }
+        //for(int j = 1; queries[i]*j < indexes.size(); j++) {
+        singleSwap(indexes, queries[i]);
+        //}
 #ifdef DEBUG
         cout << "############# Swap finish ##############" << endl;
         printIndexes(indexes);
