@@ -11,7 +11,7 @@ string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
 int amountOflevels = 0;
-map<int, list<int>> levelList;
+vector<list<int>> levelList(1024);
 
 /*
  * Complete the 'swapNodes' function below.
@@ -64,7 +64,7 @@ void addLevelOnTree(vector<vector<int>> & indexes, int index, int level) {
         }
         addLevelOnTree(indexes, indexes[index][0] - 1, level + 1);
         indexes[index].push_back(level);
-        levelList[level].push_back(index);
+        levelList[level-1].push_back(index);
         addLevelOnTree(indexes, indexes[index][1] - 1, level + 1);
     }
 }
@@ -102,7 +102,7 @@ void forInLevel(vector<vector<int>> & indexes, int querie) {
         //cout << "amountOfLevels = " << amountOflevels << endl;
         //cout << "querie = " << querie << endl;
         //cout << "i = " << i << endl;
-        for(list<int>::iterator it = levelList[i].begin(); it != levelList[i].end(); it++) {
+        for(list<int>::iterator it = levelList[i-1].begin(); it != levelList[i-1].end(); it++) {
             //cout << "it = " << (*it) << endl;
             int temp = indexes[(*it)][0];
             indexes[(*it)][0] = indexes[(*it)][1];

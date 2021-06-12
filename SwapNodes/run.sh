@@ -2,7 +2,7 @@
 
 export OUTPUT_PATH="./output.txt"
 
-for i in $(seq 1 4); do
+for i in $(seq 1 5); do
     cat input$i.txt | ./a.out
     diff output.txt output$i.txt
 done
