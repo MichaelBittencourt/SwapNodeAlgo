@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
 #include <map>
 //#define DEBUG
+//#define STRATEGY_1
+//#define STRATEGY_2
+//#define STRATEGY_3
 
 using namespace std;
 
@@ -94,11 +97,13 @@ void swapInLevel(vector<vector<int>> & indexes, int querie) {
 }
 
 void forInLevel(vector<vector<int>> & indexes, int querie) {
-    for(int i = querie; querie * i <= amountOflevels; i=2*i) {
-        cout << "querie = " << querie << endl;
+    //cout << "############### For in Level ######################" << endl;
+    for(int i = querie; i <= amountOflevels; i+=querie) {
+        //cout << "amountOfLevels = " << amountOflevels << endl;
+        //cout << "querie = " << querie << endl;
+        //cout << "i = " << i << endl;
         for(list<int>::iterator it = levelList[i].begin(); it != levelList[i].end(); it++) {
-            
-            cout << "it = " << (*it) << endl;
+            //cout << "it = " << (*it) << endl;
             int temp = indexes[(*it)][0];
             indexes[(*it)][0] = indexes[(*it)][1];
             indexes[(*it)][1] = temp;
@@ -107,10 +112,19 @@ void forInLevel(vector<vector<int>> & indexes, int querie) {
 }
 
 void singleSwap(vector<vector<int>> & indexes, int querie) {
-    //swapInLevel(indexes, 0, 1, querie);
-    //swapInLevel(indexes, querie);
+#ifdef STRATEGY_1
+    //cout << "############### Strategy 1 #################" << endl;
+    swapInLevel(indexes, 0, 1, querie);
+#else
+#ifdef STRATEGY_2
+    //cout << "############### Strategy 2 #################" << endl;
+    swapInLevel(indexes, querie);
+#else
+    //cout << "############### Strategy 3 #################" << endl;
     forInLevel(indexes, querie);
-    printIndexes(indexes);
+#endif
+#endif
+    //printIndexes(indexes);
 }
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
