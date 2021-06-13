@@ -1,17 +1,10 @@
 #include <bits/stdc++.h>
-#include <map>
-//#define DEBUG
-//#define STRATEGY_1
-//#define STRATEGY_2
-//#define STRATEGY_3
 
 using namespace std;
 
 string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
-int amountOflevels = 0;
-vector<list<int>> levelList(1024);
 
 /*
  * Complete the 'swapNodes' function below.
@@ -21,124 +14,31 @@ vector<list<int>> levelList(1024);
  *  1. 2D_INTEGER_ARRAY indexes
  *  2. INTEGER_ARRAY queries
  */
- 
- 
-void printIndexes(vector<vector<int>> indexes) {
-    int indexesSize = indexes.size();
-    cout << "indexes.size() = " << indexesSize << endl;
-    for(int i = 0; i < indexesSize; i++) {
-        int tempIndexesSize = indexes[i].size();
-        //cout << "indexes[" << i << "].size() = " << tempIndexesSize << endl;
-        for (int j = 0; j < tempIndexesSize; j++) {
-            cout << "indexes[" << i << "][" << j << "] = " << indexes[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
 
-void printQueries(vector<int> queries) {
-    int size = queries.size();
-    cout << "queries.size() = " << size << endl;
-    for (int i = 0; i < size; i++) {
-        cout << "queries[" << i << "] = " << queries[i] << endl; 
-    }
-}
-
-void inOrderAcess(vector<vector<int>> indexes, vector<int> & ret, int & retPosition, int index) {
-    if (index >= 0) {
-        inOrderAcess(indexes, ret, retPosition, indexes[index][0] - 1);
-        ret[retPosition++] = (index+1);
-        inOrderAcess(indexes, ret, retPosition, indexes[index][1] - 1);
-    }
-}
-
-void inOrderAcess(vector<vector<int>> indexes, vector<int> & ret) {
-    int initialPosition = 0;
-    inOrderAcess(indexes, ret, initialPosition, 0);
-}
-
-void addLevelOnTree(vector<vector<int>> & indexes, int index, int level) {
-    if (index >= 0) {
-        if (level > amountOflevels) {
-            amountOflevels = level;
-        }
-        addLevelOnTree(indexes, indexes[index][0] - 1, level + 1);
-        indexes[index].push_back(level);
-        levelList[level-1].push_back(index);
-        addLevelOnTree(indexes, indexes[index][1] - 1, level + 1);
-    }
-}
-
-void addLevelOnTree(vector<vector<int>> & indexes) {
-    addLevelOnTree(indexes, 0, 1);
-    //printIndexes(indexes);
-}
-
-void swapInLevel(vector<vector<int>> & indexes, int node, int level, int querie) {
+void swapInLevel(vector<vector<int>> & indexes, int node, int level, int querie, vector<int> & ret, int & venics) {
     if (node >= 0) {
         if (level % querie == 0) {
             int temp = indexes[node][0];
             indexes[node][0] = indexes[node][1];
             indexes[node][1] = temp;
         } 
-        swapInLevel(indexes, indexes[node][0] - 1, level+1, querie);
-        swapInLevel(indexes, indexes[node][1] - 1, level+1, querie);
+        swapInLevel(indexes, indexes[node][0] - 1, level+1, querie, ret, venics);
+        ret[venics++] = node+1;
+        swapInLevel(indexes, indexes[node][1] - 1, level+1, querie, ret, venics);
     }
 }
 
-void swapInLevel(vector<vector<int>> & indexes, int querie) {
-    for(int i = 0; i < indexes.size(); i++) {
-        if (indexes[i][2] % querie == 0) {
-            int temp = indexes[i][0];
-            indexes[i][0] = indexes[i][1];
-            indexes[i][1] = temp;           
-        }
-    }
-}
-
-void forInLevel(vector<vector<int>> & indexes, int querie) {
-    for(int i = querie; i <= amountOflevels; i+=querie) {
-        for(list<int>::iterator it = levelList[i-1].begin(); it != levelList[i-1].end(); it++) {
-            int temp = indexes[(*it)][0];
-            indexes[(*it)][0] = indexes[(*it)][1];
-            indexes[(*it)][1] = temp;
-        }
-    }
-}
-
-void singleSwap(vector<vector<int>> & indexes, int querie) {
-#ifdef STRATEGY_1
-    //cout << "############### Strategy 1 #################" << endl;
-    swapInLevel(indexes, 0, 1, querie);
-#else
-#ifdef STRATEGY_2
-    //cout << "############### Strategy 2 #################" << endl;
-    swapInLevel(indexes, querie);
-#else
-    //cout << "############### Strategy 3 #################" << endl;
-    forInLevel(indexes, querie);
-#endif
-#endif
-    //printIndexes(indexes);
+vector<int> singleSwap(vector<vector<int>> & indexes, int querie) {
+    vector<int> ret(indexes.size());
+    int pos = 0;
+    swapInLevel(indexes, 0, 1, querie, ret, pos);
+    return ret;
 }
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
-    addLevelOnTree(indexes);
-#ifdef STRATEGY_1
-    cout << "############### Strategy 1 #################" << endl;
-#else
-#ifdef STRATEGY_2
-    cout << "############### Strategy 2 #################" << endl;
-#else
-    cout << "############### Strategy 3 #################" << endl; 
-#endif
-#endif
-
     vector<vector<int>> ret(queries.size());
     for(int i = 0; i < ret.size(); i++) {
-        ret[i].resize(indexes.size());
-        singleSwap(indexes, queries[i]);
-        inOrderAcess(indexes, ret[i]);
+        ret[i] = singleSwap(indexes, queries[i]);
     }
     return ret;
 };
